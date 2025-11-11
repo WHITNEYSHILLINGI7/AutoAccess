@@ -86,3 +86,4 @@ def fetch_errors(limit: int = 100) -> List[Tuple]:
         return cur.fetchall()
 
 
+

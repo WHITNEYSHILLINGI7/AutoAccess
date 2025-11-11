@@ -31,3 +31,4 @@ def send_email_simulated(to_address: str, subject: str, body: str) -> None:
         f.write(log_entry)
 
 
+

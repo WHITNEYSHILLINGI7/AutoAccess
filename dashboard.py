@@ -83,3 +83,4 @@ st.divider()
 st.caption("Tip: Drop or edit 'uploads/new_hires.xlsx' to trigger processing. Refresh to see updates.")
 
 
+

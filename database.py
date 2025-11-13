@@ -30,6 +30,16 @@ CREATE TABLE IF NOT EXISTS errors (
     message TEXT NOT NULL,
     row_data TEXT
 );
+
+CREATE TABLE IF NOT EXISTS notifications (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    created_at TEXT NOT NULL,
+    sender_username TEXT NOT NULL,
+    recipient_email TEXT NOT NULL,
+    subject TEXT NOT NULL,
+    message TEXT NOT NULL,
+    is_read BOOLEAN DEFAULT FALSE
+);
 """
 
 
@@ -84,6 +94,49 @@ def fetch_errors(limit: int = 100) -> List[Tuple]:
             (limit,),
         )
         return cur.fetchall()
+
+
+def create_notification(sender_username: str, recipient_email: str, subject: str, message: str) -> int:
+    """Create a new notification and return its ID."""
+    ts = datetime.now(timezone.utc).isoformat()
+    with db_conn() as conn:
+        cur = conn.execute(
+            "INSERT INTO notifications (created_at, sender_username, recipient_email, subject, message) VALUES (?, ?, ?, ?, ?)",
+            (ts, sender_username, recipient_email, subject, message),
+        )
+        conn.commit()
+        return cur.lastrowid
+
+
+def fetch_user_notifications(recipient_email: str, limit: int = 50) -> List[Tuple]:
+    """Fetch notifications for a specific user, ordered by creation time descending."""
+    with db_conn() as conn:
+        cur = conn.execute(
+            "SELECT id, created_at, sender_username, subject, message, is_read FROM notifications WHERE recipient_email = ? ORDER BY created_at DESC LIMIT ?",
+            (recipient_email, limit),
+        )
+        return cur.fetchall()
+
+
+def mark_notification_read(notification_id: int, recipient_email: str) -> bool:
+    """Mark a notification as read. Returns True if successful."""
+    with db_conn() as conn:
+        cur = conn.execute(
+            "UPDATE notifications SET is_read = TRUE WHERE id = ? AND recipient_email = ?",
+            (notification_id, recipient_email),
+        )
+        conn.commit()
+        return cur.rowcount > 0
+
+
+def get_unread_notification_count(recipient_email: str) -> int:
+    """Get the count of unread notifications for a user."""
+    with db_conn() as conn:
+        cur = conn.execute(
+            "SELECT COUNT(*) FROM notifications WHERE recipient_email = ? AND is_read = FALSE",
+            (recipient_email,),
+        )
+        return cur.fetchone()[0]
 
 
 

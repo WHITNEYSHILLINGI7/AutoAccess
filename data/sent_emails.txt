@@ -1,10 +1,10 @@
-[2025-11-11T14:02:19.418699+00:00] FROM: it-automation@company.com TO: john.doe@company.com
+[2025-11-11T14:02:19.418699+00:00] FROM: it-automation@company.com TO: nakato.ssali@company.com
 SUBJECT: Welcome to Company – Your Account Details
 BODY:
-Hello John Doe,
+Hello Nakato Ssali,
 
 Your company account has been created.
-Username: john.doe
+Username: nakato.ssali
 Temporary Password: ER@#1hCKB9Kj
 Department: Finance
 Role: Analyst
@@ -14,13 +14,13 @@ Please change your password on first login.
 — IT Automation
 
 ------------------------------------------------------------
-[2025-11-11T14:02:19.487290+00:00] FROM: it-automation@company.com TO: jane.smith@company.com
+[2025-11-11T14:02:19.487290+00:00] FROM: it-automation@company.com TO: mbabazi.nakato@company.com
 SUBJECT: Welcome to Company – Your Account Details
 BODY:
-Hello Jane Smith,
+Hello Mbabazi Nakato,
 
 Your company account has been created.
-Username: jane.smith
+Username: mbabazi.nakato
 Temporary Password: RjK^Bnfk07zR
 Department: HR
 Role: Coordinator
@@ -30,13 +30,13 @@ Please change your password on first login.
 — IT Automation
 
 ------------------------------------------------------------
-[2025-11-11T14:02:19.555544+00:00] FROM: it-automation@company.com TO: alex.kim@company.com
+[2025-11-11T14:02:19.555544+00:00] FROM: it-automation@company.com TO: ssali.mbabazi@company.com
 SUBJECT: Welcome to Company – Your Account Details
 BODY:
-Hello Alex Kim,
+Hello Ssali Mbabazi,
 
 Your company account has been created.
-Username: alex.kim
+Username: ssali.mbabazi
 Temporary Password: 3!O%dQ9Oiwxn
 Department: Marketing
 Role: Intern
@@ -46,13 +46,13 @@ Please change your password on first login.
 — IT Automation
 
 ------------------------------------------------------------
-[2025-11-11T14:02:19.622424+00:00] FROM: it-automation@company.com TO: tom.lee@company.com
+[2025-11-11T14:02:19.622424+00:00] FROM: it-automation@company.com TO: nakato.mbabazi@company.com
 SUBJECT: Welcome to Company – Your Account Details
 BODY:
-Hello Tom Lee,
+Hello Nakato Mbabazi,
 
 Your company account has been created.
-Username: tom.lee
+Username: nakato.mbabazi
 Temporary Password: oTcemWJ6yDRm
 Department: IT
 Role: Engineer
@@ -94,5 +94,304 @@ This code expires when the browser session ends.
 SUBJECT: Your AutoAccess Login Code
 BODY:
 Your one-time code is: 870497
+This code expires when the browser session ends.
+------------------------------------------------------------
+[2025-11-11T16:12:07.691620+00:00] FROM: it-automation@company.com TO: john.doe@company.com
+SUBJECT: Your AutoAccess Login Code
+BODY:
+Your one-time code is: 317909
+This code expires when the browser session ends.
+------------------------------------------------------------
+[2025-11-13T14:19:06.050181+00:00] FROM: it-automation@company.com TO: john.doe@company.com
+SUBJECT: Welcome to Company – Your Account Details
+BODY:
+Hello John Doe,
+
+Your company account has been created.
+Username: john.doe
+Temporary Password: lDkK@WAnYwl7
+Department: Finance
+Role: Analyst
+
+Please change your password on first login.
+
+— IT Automation
+
+------------------------------------------------------------
+[2025-11-13T14:19:06.121700+00:00] FROM: it-automation@company.com TO: jane.smith@company.com
+SUBJECT: Welcome to Company – Your Account Details
+BODY:
+Hello Jane Smith,
+
+Your company account has been created.
+Username: jane.smith
+Temporary Password: MFsTg%FpfXzl
+Department: HR
+Role: Coordinator
+
+Please change your password on first login.
+
+— IT Automation
+
+------------------------------------------------------------
+[2025-11-13T14:19:06.190881+00:00] FROM: it-automation@company.com TO: alex.kim@company.com
+SUBJECT: Welcome to Company – Your Account Details
+BODY:
+Hello Alex Kim,
+
+Your company account has been created.
+Username: alex.kim
+Temporary Password: K!0gZ$33NUZa
+Department: Marketing
+Role: Intern
+
+Please change your password on first login.
+
+— IT Automation
+
+------------------------------------------------------------
+[2025-11-13T14:19:06.251862+00:00] FROM: it-automation@company.com TO: tom.lee@company.com
+SUBJECT: Welcome to Company – Your Account Details
+BODY:
+Hello Tom Lee,
+
+Your company account has been created.
+Username: tom.lee
+Temporary Password: @Hf^SrGFGsTX
+Department: IT
+Role: Engineer
+
+Please change your password on first login.
+
+— IT Automation
+
+------------------------------------------------------------
+[2025-11-13T14:19:06.275249+00:00] FROM: it-automation@company.com TO: hr-ops@company.com
+SUBJECT: AutoAccess Run Summary — 4 created, 0 deactivated, 0 errors
+BODY:
+AutoAccess Summary
+
+Created: 4
+Deactivated: 0
+Errors: 0
+Processed at: 2025-11-13T14:19:06.275249
+
+------------------------------------------------------------
+[2025-11-13T14:19:06.280775+00:00] FROM: it-automation@company.com TO: it-automation@company.com
+SUBJECT: AutoAccess Run Summary — 4 created, 0 deactivated, 0 errors
+BODY:
+AutoAccess Summary
+
+Created: 4
+Deactivated: 0
+Errors: 0
+Processed at: 2025-11-13T14:19:06.275249
+
+------------------------------------------------------------
+[2025-11-13T14:33:47.786815+00:00] FROM: it-automation@company.com TO: natabo.dorcus@company.com
+SUBJECT: Welcome to Company – Your Account Details
+BODY:
+Hello Natabo Dorcus,
+
+Your company account has been created.
+Username: natabo.dorcus
+Temporary Password: fc^Bz323EoMR
+Department: Finance
+Role: Analyst
+
+Please change your password on first login.
+
+— IT Automation
+
+------------------------------------------------------------
+[2025-11-13T14:33:47.830798+00:00] FROM: it-automation@company.com TO: musimenta.daphine@company.com
+SUBJECT: Welcome to Company – Your Account Details
+BODY:
+Hello Musimenta Daphine Liz,
+
+Your company account has been created.
+Username: musimenta.daphine
+Temporary Password: dA1AB$fm8Xx3
+Department: HR
+Role: Coordinator
+
+Please change your password on first login.
+
+— IT Automation
+
+------------------------------------------------------------
+[2025-11-13T14:33:47.873778+00:00] FROM: it-automation@company.com TO: ninsiima.whitney@company.com
+SUBJECT: Welcome to Company – Your Account Details
+BODY:
+Hello Ninsiima Whitney,
+
+Your company account has been created.
+Username: ninsiima.whitney
+Temporary Password: G7z$VZPB1cOm
+Department: Marketing
+Role: Intern
+
+Please change your password on first login.
+
+— IT Automation
+
+------------------------------------------------------------
+[2025-11-13T14:33:47.915638+00:00] FROM: it-automation@company.com TO: mbabazi.lillian@company.com
+SUBJECT: Welcome to Company – Your Account Details
+BODY:
+Hello Mbabazi Lillian,
+
+Your company account has been created.
+Username: mbabazi.lillian
+Temporary Password: 7cRlDIzR!kbG
+Department: IT
+Role: Engineer
+
+Please change your password on first login.
+
+— IT Automation
+
+------------------------------------------------------------
+[2025-11-13T14:33:47.963320+00:00] FROM: it-automation@company.com TO: nuwasiima.amos@company.com
+SUBJECT: Welcome to Company – Your Account Details
+BODY:
+Hello Nuwasiima Amos,
+
+Your company account has been created.
+Username: nuwasiima.amos
+Temporary Password: udu^Jl6G$EEb
+Department: Finance
+Role: Manager
+
+Please change your password on first login.
+
+— IT Automation
+
+------------------------------------------------------------
+[2025-11-13T14:33:48.008952+00:00] FROM: it-automation@company.com TO: agaba.duncan@company.com
+SUBJECT: Welcome to Company – Your Account Details
+BODY:
+Hello Agaba Duncan,
+
+Your company account has been created.
+Username: agaba.duncan
+Temporary Password: FufwhRsOOrbX
+Department: IT
+Role: Developer
+
+Please change your password on first login.
+
+— IT Automation
+
+------------------------------------------------------------
+[2025-11-13T14:33:48.020957+00:00] FROM: it-automation@company.com TO: hr-ops@company.com
+SUBJECT: AutoAccess Run Summary — 6 created, 0 deactivated, 0 errors
+BODY:
+AutoAccess Summary
+
+Created: 6
+Deactivated: 0
+Errors: 0
+Processed at: 2025-11-13T14:33:48.020957
+
+------------------------------------------------------------
+[2025-11-13T14:33:48.022296+00:00] FROM: it-automation@company.com TO: it-automation@company.com
+SUBJECT: AutoAccess Run Summary — 6 created, 0 deactivated, 0 errors
+BODY:
+AutoAccess Summary
+
+Created: 6
+Deactivated: 0
+Errors: 0
+Processed at: 2025-11-13T14:33:48.020957
+
+------------------------------------------------------------
+[2025-11-13T14:40:21.946097+00:00] FROM: it-automation@company.com TO: hr-ops@company.com
+SUBJECT: AutoAccess Run Summary — 0 created, 0 deactivated, 0 errors
+BODY:
+AutoAccess Summary
+
+Created: 0
+Deactivated: 0
+Errors: 0
+Processed at: 2025-11-13T14:40:21.946097
+
+------------------------------------------------------------
+[2025-11-13T14:40:21.947203+00:00] FROM: it-automation@company.com TO: it-automation@company.com
+SUBJECT: AutoAccess Run Summary — 0 created, 0 deactivated, 0 errors
+BODY:
+AutoAccess Summary
+
+Created: 0
+Deactivated: 0
+Errors: 0
+Processed at: 2025-11-13T14:40:21.946097
+
+------------------------------------------------------------
+[2025-11-13T14:48:01.826673+00:00] FROM: it-automation@company.com TO: natabo.dorcus@company.com
+SUBJECT: Your AutoAccess Login Code
+BODY:
+Your one-time code is: 871652
+This code expires when the browser session ends.
+------------------------------------------------------------
+[2025-11-13T15:33:56.256347+00:00] FROM: it-automation@company.com TO: admin@company.com
+SUBJECT: AutoAccess Validation Errors — 4 issues found in new_hires.csv
+BODY:
+AutoAccess Validation Report
+
+File: new_hires.csv
+Processed at: 2025-11-13T15:33:56.256347
+
+Validation Summary:
+- Valid records: 1
+- Records with errors: 4
+
+Please review the errors in the admin dashboard and correct the data before re-uploading.
+
+— AutoAccess System
+
+------------------------------------------------------------
+[2025-11-13T15:33:56.291810+00:00] FROM: it-automation@company.com TO: john.doe@company.com
+SUBJECT: Welcome to Company – Your Account Details
+BODY:
+Hello John Doe,
+
+Your company account has been created.
+Username: john.doe
+Temporary Password: ^K#TqaHvD@wP
+Department: Finance
+Role: Analyst
+
+Please change your password on first login.
+
+— IT Automation
+
+------------------------------------------------------------
+[2025-11-13T15:33:56.304702+00:00] FROM: it-automation@company.com TO: hr-ops@company.com
+SUBJECT: AutoAccess Run Summary — 1 created, 0 deactivated, 4 errors
+BODY:
+AutoAccess Summary
+
+Created: 1
+Deactivated: 0
+Errors: 4
+Processed at: 2025-11-13T15:33:56.304702
+
+------------------------------------------------------------
+[2025-11-13T15:33:56.306593+00:00] FROM: it-automation@company.com TO: it-automation@company.com
+SUBJECT: AutoAccess Run Summary — 1 created, 0 deactivated, 4 errors
+BODY:
+AutoAccess Summary
+
+Created: 1
+Deactivated: 0
+Errors: 4
+Processed at: 2025-11-13T15:33:56.304702
+
+------------------------------------------------------------
+[2025-11-13T15:46:26.721029+00:00] FROM: it-automation@company.com TO: natabo.dorcus@company.com
+SUBJECT: Your AutoAccess Login Code
+BODY:
+Your one-time code is: 880669
 This code expires when the browser session ends.
 ------------------------------------------------------------

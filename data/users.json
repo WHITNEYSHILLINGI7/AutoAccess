@@ -1,11 +1,12 @@
 {
   "users": [
     {
-      "username": "john.doe",
-      "name": "John Doe",
-      "email": "john.doe@company.com",
+      "username": "natabo.dorcus",
+      "name": "Natabo Dorcus",
+      "email": "natabo.dorcus@company.com",
       "department": "Finance",
       "role": "Analyst",
+      "ou": "OU=Finance,OU=Users,DC=company,DC=com",
       "groups": [
         "finance_full"
       ],
@@ -15,31 +16,32 @@
         "view_reports"
       ],
       "status": "active",
-      "created_at": "2025-11-11T14:02:19.395887",
-      "ou": "OU=Finance,OU=Users,DC=company,DC=com"
+      "created_at": "2025-11-13T14:33:47.773731"
     },
     {
-      "username": "jane.smith",
-      "name": "Jane Smith",
-      "email": "jane.smith@company.com",
-      "department": "Marketing",
+      "username": "musimenta.daphine",
+      "name": "Musimenta Daphine Liz",
+      "email": "musimenta.daphine@company.com",
+      "department": "HR",
       "role": "Coordinator",
+      "ou": "OU=HR,OU=Users,DC=company,DC=com",
       "groups": [
-        "mkt_basic"
+        "hr_portal"
       ],
       "permissions": [
-        "view_campaigns"
+        "view_hr_portal",
+        "create_tickets"
       ],
       "status": "active",
-      "created_at": "2025-11-11T14:02:19.436554",
-      "ou": "OU=Marketing,OU=Users,DC=company,DC=com"
+      "created_at": "2025-11-13T14:33:47.799626"
     },
     {
-      "username": "alex.kim",
-      "name": "Alex Kim",
-      "email": "alex.kim@company.com",
+      "username": "ninsiima.whitney",
+      "name": "Ninsiima Whitney",
+      "email": "ninsiima.whitney@company.com",
       "department": "Marketing",
       "role": "Intern",
+      "ou": "OU=Marketing,OU=Users,DC=company,DC=com",
       "groups": [
         "mkt_basic"
       ],
@@ -47,14 +49,15 @@
         "view_campaigns"
       ],
       "status": "active",
-      "created_at": "2025-11-11T14:02:19.503130"
+      "created_at": "2025-11-13T14:33:47.843722"
     },
     {
-      "username": "tom.lee",
-      "name": "Tom Lee",
-      "email": "tom.lee@company.com",
+      "username": "mbabazi.lillian",
+      "name": "Mbabazi Lillian",
+      "email": "mbabazi.lillian@company.com",
       "department": "IT",
       "role": "Engineer",
+      "ou": "OU=IT,OU=Users,DC=company,DC=com",
       "groups": [
         "it_engineers"
       ],
@@ -63,7 +66,60 @@
         "deploy_access"
       ],
       "status": "active",
-      "created_at": "2025-11-11T14:02:19.570645"
+      "created_at": "2025-11-13T14:33:47.886340"
+    },
+    {
+      "username": "nuwasiima.amos",
+      "name": "Nuwasiima Amos",
+      "email": "nuwasiima.amos@company.com",
+      "department": "Finance",
+      "role": "Manager",
+      "ou": "OU=Finance,OU=Users,DC=company,DC=com",
+      "groups": [
+        "finance_full"
+      ],
+      "permissions": [
+        "read_ledger",
+        "post_journal",
+        "view_reports"
+      ],
+      "status": "active",
+      "created_at": "2025-11-13T14:33:47.928103"
+    },
+    {
+      "username": "agaba.duncan",
+      "name": "Agaba Duncan",
+      "email": "agaba.duncan@company.com",
+      "department": "IT",
+      "role": "Developer",
+      "ou": "OU=IT,OU=Users,DC=company,DC=com",
+      "groups": [
+        "it_engineers"
+      ],
+      "permissions": [
+        "admin_console",
+        "deploy_access"
+      ],
+      "status": "active",
+      "created_at": "2025-11-13T14:33:47.974997"
+    },
+    {
+      "username": "john.doe",
+      "name": "John Doe",
+      "email": "john.doe@company.com",
+      "department": "Finance",
+      "role": "Analyst",
+      "ou": "OU=Finance,OU=Users,DC=company,DC=com",
+      "groups": [
+        "finance_full"
+      ],
+      "permissions": [
+        "read_ledger",
+        "post_journal",
+        "view_reports"
+      ],
+      "status": "active",
+      "created_at": "2025-11-13T15:33:56.271069"
     }
   ]
 }

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero">
+  <h2>Send Notifications</h2>
+  <p class="muted">Send notifications to employees.</p>
+</section>
+
+<article class="metric" style="margin-top: 2rem; padding: 2rem;">
+  <h3 style="margin-bottom: 1.5rem; color: #2563eb;">Compose Notification</h3>
+  <form method="post" style="display: flex; flex-direction: column; gap: 1.5rem;">
+    <div>
+      <label for="recipient_email" style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">Recipient</label>
+      <select id="recipient_email" name="recipient_email" required style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 8px; font-size: 1rem;">
+        <option value="">Select an employee...</option>
+        {% for user in users %}
+        <option value="{{ user.email }}">{{ user.name }} ({{ user.email }}) - {{ user.department }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div>
+      <label for="subject" style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">Subject</label>
+      <input type="text" id="subject" name="subject" required
+             style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 8px; font-size: 1rem;"
+             placeholder="Enter notification subject">
+    </div>
+
+    <div>
+      <label for="message" style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">Message</label>
+      <textarea id="message" name="message" required rows="6"
+                style="width: 100%; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 8px; font-size: 1rem; resize: vertical;"
+                placeholder="Enter your message..."></textarea>
+    </div>
+
+    <button type="submit" style="background: linear-gradient(135deg, #2563eb, #8b5cf6); color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; align-self: flex-start;">
+      Send Notification
+    </button>
+  </form>
+</article>
+
+<article class="metric" style="margin-top: 2rem; padding: 2rem;">
+  <h3 style="margin-bottom: 1.5rem; color: #2563eb;">Quick Actions</h3>
+  <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+    <a href="{{ url_for('dashboard') }}" role="button" style="background: linear-gradient(135deg, #6b7280, #9ca3af); color: white; padding: 0.75rem 1.5rem; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.2s ease;">
+      Back to Dashboard
+    </a>
+  </div>
+</article>
+{% endblock %}

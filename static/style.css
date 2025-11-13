@@ -9,6 +9,10 @@ body, p, td, th, label, input, button {
 }
 a {
   color: #2563eb;
+  transition: color 0.2s ease;
+}
+a:hover {
+  color: #1d4ed8;
 }
 h1, h2, h3, h4, h5 {
   color: #0b1220;
@@ -20,6 +24,8 @@ h1, h2, h3, h4, h5 {
 /* Table zebra and hover */
 table {
   background: #ffffff !important;
+  border-radius: 12px;
+  overflow: hidden;
 }
 main.container table, main.container table * {
   color: #0b1220 !important;
@@ -29,26 +35,83 @@ table, table td, table th {
   border-color: rgba(0,0,0,0.08);
 }
 table tbody tr:nth-child(odd) {
-  background: #fafcff;
+  background: linear-gradient(90deg, #fafcff 0%, #f8fafc 100%);
 }
 table tbody tr:hover {
-  background: #eef6ff;
+  background: linear-gradient(90deg, #eef6ff 0%, #e0f2fe 100%);
+  transform: scale(1.01);
+  transition: all 0.2s ease;
 }
 table thead th {
-  background: #eff6ff;
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
   color: #111827;
   font-weight: 700;
 }
 
 /* Centered login card */
 .login-card {
-  max-width: 420px;
-  margin: 2rem auto;
-  background: #ffffff;
-  border: 1px solid rgba(0,0,0,0.06);
-  border-radius: 12px;
-  padding: 1rem 1.25rem;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+  max-width: 450px;
+  margin: 3rem auto;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border: 1px solid rgba(255,255,255,0.8);
+  border-radius: 20px;
+  padding: 2rem 2.5rem;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.1);
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+}
+.login-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #2563eb, #8b5cf6, #22c55e);
+}
+.login-card h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #2563eb, #8b5cf6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.login-card form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.login-card input {
+  border-radius: 8px;
+  padding: 0.75rem;
+  border: 1px solid rgba(0,0,0,0.1);
+  transition: all 0.2s ease;
+}
+.login-card input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+.login-card button {
+  background: linear-gradient(135deg, #2563eb, #8b5cf6);
+  border: none;
+  color: white;
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.login-card button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.3);
+}
+.login-card p {
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 0.9rem;
 }
 
 /* Drag & drop upload */
@@ -64,6 +127,96 @@ table thead th {
 .dropzone.dragover {
   background: #e3f2fd;
   border-color: #1976d2;
+}
+
+/* Compact buttons */
+button, a[role="button"], input[type="submit"] {
+  padding: 0.4rem 0.75rem !important;
+  font-size: 0.875rem !important;
+  line-height: 1.4 !important;
+  min-height: auto !important;
+  height: auto !important;
+}
+
+/* Smaller action buttons in tables */
+table td a[role="button"],
+table td button[role="button"],
+table td form button {
+  padding: 0.3rem 0.6rem !important;
+  font-size: 0.8rem !important;
+  margin: 0.1rem !important;
+}
+
+/* Compact nav buttons */
+nav a[role="button"] {
+  padding: 0.35rem 0.65rem !important;
+  font-size: 0.85rem !important;
+}
+
+/* Actions dropdown */
+.actions-cell {
+  position: relative;
+}
+.actions-menu {
+  display: inline-block;
+  position: relative;
+}
+.actions-menu summary {
+  list-style: none;
+  cursor: pointer;
+  background: #2563eb;
+  color: #fff;
+  border-radius: 8px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8rem;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2);
+}
+.actions-menu summary::-webkit-details-marker {
+  display: none;
+}
+.actions-menu[open] summary {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.actions-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 180px;
+  background: #ffffff;
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 0 0 8px 8px;
+  padding: 0.5rem;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  z-index: 10;
+}
+.actions-dropdown a,
+.actions-dropdown button {
+  padding: 0.3rem 0.4rem !important;
+  font-size: 0.8rem !important;
+  text-align: left;
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: #0f172a;
+}
+.actions-dropdown a:hover,
+.actions-dropdown button:hover {
+  background: #eef2ff;
+  color: #1d4ed8;
+}
+.actions-dropdown form {
+  margin: 0;
+}
+.actions-dropdown span.muted {
+  font-size: 0.75rem;
 }
 
 

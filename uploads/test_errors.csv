@@ -1,0 +1,7 @@
+name,email,department,role,join_date,status
+John Doe,john.doe@company.com,Finance,Analyst,2025-11-15,active
+,Jane Smith,jane.smith@company.com,HR,Coordinator,2025-11-16,active
+Bob Wilson,invalid-email,IT,Engineer,2025-11-17,active
+Alice Brown,alice.brown@company.com,UnknownDept,Manager,2025-11-18,active
+Charlie Davis,charlie.davis@company.com,Finance,Analyst,invalid-date,active
+Eve Miller,eve.miller@company.com,Marketing,Intern,2025-11-20,unknown

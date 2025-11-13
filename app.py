@@ -9,7 +9,7 @@ import pandas as pd
 import os
 
 from config import UPLOADS_DIR, USERS_JSON, DB_PATH, EMAIL_LOG, SAMPLE_XLSX
-from database import init_db, fetch_recent_users, log_event
+from database import init_db, fetch_recent_users, log_event, create_notification, fetch_user_notifications, mark_notification_read, get_unread_notification_count
 from autoaccess import ensure_initial_files, process_file
 from simulate_ad import SimulatedAD
 from email_simulator import send_email_simulated
@@ -94,6 +94,20 @@ def create_app() -> Flask:
             save_path = UPLOADS_DIR / f"new_hires{ext}"
             file.save(str(save_path))
             created, deactivated, errors = process_file(save_path)
+
+            # Send in-app notification to admin if there are errors
+            if errors > 0:
+                try:
+                    admin_notification_id = create_notification(
+                        "system",
+                        "admin@company.com",  # Admin email
+                        f"File Validation Errors: {errors} issues found",
+                        f"The uploaded file '{file.filename}' contains {errors} validation errors. Please review the errors in the dashboard and correct the data before re-processing."
+                    )
+                    print(f"Admin in-app notification created: {admin_notification_id}")
+                except Exception as e:
+                    print(f"Failed to create admin notification: {e}")
+
             flash(f"Processed: {created} created, {deactivated} deactivated, {errors} errors", "success")
             return redirect(url_for("dashboard"))
         return render_template("upload.html")
@@ -152,6 +166,62 @@ def create_app() -> Flask:
                 flash(f"Failed to send: {e}", "error")
         return render_template("user_notify.html", user=user)
 
+    @app.route("/users/<username>/deactivate", methods=["POST"])
+    @login_required
+    def deactivate_user(username: str):
+        ad = SimulatedAD()
+        user = ad.get_user(username)
+        if not user:
+            flash("User not found.", "error")
+            return redirect(url_for("dashboard"))
+        if user.get("status") == "inactive":
+            flash("User is already deactivated.", "error")
+            return redirect(url_for("dashboard"))
+        try:
+            ad.deactivate_user(username)
+            log_event("admin_deactivate", username, "deactivated by admin")
+            flash(f"User {username} has been deactivated successfully.", "success")
+        except Exception as e:
+            flash(f"Deactivation failed: {e}", "error")
+        return redirect(url_for("dashboard"))
+
+    @app.route("/notifications", methods=["GET", "POST"])
+    @login_required
+    def notifications():
+        if request.method == "POST":
+            recipient_email = request.form.get("recipient_email", "").strip()
+            subject = request.form.get("subject", "").strip()
+            message = request.form.get("message", "").strip()
+
+            if not recipient_email or not subject or not message:
+                flash("All fields are required.", "error")
+                return redirect(request.url)
+
+            # Verify recipient exists
+            ad = SimulatedAD()
+            recipient = None
+            for u in ad.list_users():
+                if u.get("email", "").lower() == recipient_email.lower():
+                    recipient = u
+                    break
+
+            if not recipient:
+                flash("Recipient not found.", "error")
+                return redirect(request.url)
+
+            try:
+                notification_id = create_notification("admin", recipient_email, subject, message)
+                log_event("send_notification", recipient.get("username"), f"to={recipient_email} id={notification_id}")
+                flash("Notification sent successfully.", "success")
+                return redirect(url_for("notifications"))
+            except Exception as e:
+                flash(f"Failed to send notification: {e}", "error")
+
+        # GET request - show form and recent notifications
+        ad = SimulatedAD()
+        users = [u for u in ad.list_users() if u.get("status") == "active"]
+        return render_template("notifications.html", users=users)
+
     # Employee OTP Login
     @app.route("/employee/login", methods=["GET", "POST"])
     def employee_login():
@@ -208,7 +278,55 @@ def create_app() -> Flask:
         if me.get("status") != "active":
             flash("Your account is not active.", "error")
             return redirect(url_for("employee_logout"))
-        return render_template("employee_dashboard.html", user=me)
+
+        # Get unread notification count for the quick actions badge
+        unread_count = get_unread_notification_count(email)
+
+        return render_template("employee_dashboard.html", user=me, unread_count=unread_count)
+
+    @app.route("/employee/notifications")
+    @employee_required
+    def employee_notifications():
+        email = session.get("emp_email")
+        if not email:
+            return redirect(url_for("employee_login"))
+
+        # Fetch notifications for this user
+        notifications_data = fetch_user_notifications(email)
+        notifications = []
+        for row in notifications_data:
+            # Parse and format the timestamp
+            from datetime import datetime
+            try:
+                # Parse ISO format timestamp
+                dt = datetime.fromisoformat(row[1].replace('Z', '+00:00'))
+                formatted_time = dt.strftime('%b %d, %Y %I:%M %p')
+            except:
+                formatted_time = row[1]  # Fallback to raw timestamp
+
+            notifications.append({
+                'id': row[0],
+                'created_at': row[1],
+                'formatted_time': formatted_time,
+                'sender_username': row[2],
+                'subject': row[3],
+                'message': row[4],
+                'is_read': bool(row[5])
+            })
+
+        unread_count = get_unread_notification_count(email)
+
+        return render_template("employee_notifications.html", notifications=notifications, unread_count=unread_count)
+
+    @app.route("/employee/mark-notification-read/<int:notification_id>", methods=["POST"])
+    @employee_required
+    def mark_notification_read(notification_id: int):
+        email = session.get("emp_email")
+        if not email:
+            return {"success": False, "error": "Not authenticated"}, 401
+
+        success = mark_notification_read(notification_id, email)
+        return {"success": success}
 
     @app.route("/employee/logout")
     def employee_logout():

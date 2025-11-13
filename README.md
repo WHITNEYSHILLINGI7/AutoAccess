@@ -38,6 +38,14 @@ autoaccess-project/
 pip install -r requirements.txt
 ```
 
+### Email Configuration (Optional)
+To send real emails instead of simulating:
+- Set environment variable `USE_REAL_EMAIL=true`
+- Configure SMTP: `SMTP_SERVER`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`
+- Example: `export SMTP_SERVER=smtp.gmail.com; export SMTP_PORT=587; export SMTP_USERNAME=your@gmail.com; export SMTP_PASSWORD=yourpassword`
+
+If not configured, emails are simulated (printed to console and logged to file).
+
 ### Run
 Terminal 1 (Flask web app):
 ```bash

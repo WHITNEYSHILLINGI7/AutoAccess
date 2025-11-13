@@ -39,6 +39,7 @@ from config import (
     PPTX_PATH,
     HR_SUMMARY_EMAIL,
     IT_SUMMARY_EMAIL,
+    ADMIN_EMAIL,
     SUMMARY_SUBJECT_TEMPLATE,
     SUMMARY_BODY_TEMPLATE,
 )
@@ -99,7 +100,7 @@ def check_duplicates(emails: List[str]) -> List[str]:
 
 def load_excel(path: Path) -> pd.DataFrame:
     if path.suffix.lower() == ".csv":
-        return pd.read_csv(path)
+        return pd.read_csv(path, on_bad_lines='skip', engine='python')
     return pd.read_excel(path, engine="openpyxl")
 
 
@@ -108,10 +109,12 @@ def ensure_sample_excel(path: Path = SAMPLE_XLSX) -> None:
         return
     df = pd.DataFrame(
         [
-            {"name": "John Doe", "email": "john.doe@company.com", "department": "Finance", "role": "Analyst", "join_date": "2025-11-15", "status": "active"},
-            {"name": "Jane Smith", "email": "jane.smith@company.com", "department": "HR", "role": "Coordinator", "join_date": "2025-11-16", "status": "active"},
-            {"name": "Alex Kim", "email": "alex.kim@company.com", "department": "Marketing", "role": "Intern", "join_date": "2025-11-17", "status": "active"},
-            {"name": "Tom Lee", "email": "tom.lee@company.com", "department": "IT", "role": "Engineer", "join_date": "2025-11-18", "status": "active"},
+            {"name": "Natabo Dorcus", "email": "natabo.dorcus@company.com", "department": "Finance", "role": "Analyst", "join_date": "2025-11-15", "status": "active"},
+            {"name": "Musimenta Daphine Liz", "email": "musimenta.daphine@company.com", "department": "HR", "role": "Coordinator", "join_date": "2025-11-16", "status": "active"},
+            {"name": "Ninsiima Whitney", "email": "ninsiima.whitney@company.com", "department": "Marketing", "role": "Intern", "join_date": "2025-11-17", "status": "active"},
+            {"name": "Mbabazi Lillian", "email": "mbabazi.lillian@company.com", "department": "IT", "role": "Engineer", "join_date": "2025-11-18", "status": "active"},
+            {"name": "Nuwasiima Amos", "email": "nuwasiima.amos@company.com", "department": "Finance", "role": "Manager", "join_date": "2025-11-19", "status": "active"},
+            {"name": "Agaba Duncan", "email": "agaba.duncan@company.com", "department": "IT", "role": "Developer", "join_date": "2025-11-20", "status": "active"},
         ]
     )
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -201,6 +204,29 @@ def process_file(path: Path) -> Tuple[int, int, int]:
             errors_total += 1
             log_error("validation", "; ".join(errs), json.dumps(r))
     print(f"Validation complete: {len(valid_rows)} records OK, {errors_total} errors")
+
+    # Send admin notification if there are validation errors
+    if errors_total > 0:
+        error_subject = f"AutoAccess Validation Errors — {errors_total} issues found in {path.name}"
+        error_body = f"""AutoAccess Validation Report
+
+File: {path.name}
+Processed at: {datetime.utcnow().isoformat()}
+
+Validation Summary:
+- Valid records: {len(valid_rows)}
+- Records with errors: {errors_total}
+
+Please review the errors in the admin dashboard and correct the data before re-uploading.
+
+— AutoAccess System
+"""
+        try:
+            send_email_simulated(ADMIN_EMAIL, error_subject, error_body)
+            log_event("admin_error_notification", None, f"errors={errors_total} file={path.name}")
+            print(f"Admin notification sent for {errors_total} validation errors")
+        except Exception as e:
+            log_error("admin_notification", f"Failed to send admin error notification: {e}")
 
     # Create/Deactivate accounts
     ad = SimulatedAD()

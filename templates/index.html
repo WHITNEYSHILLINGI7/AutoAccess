@@ -69,9 +69,21 @@
         <td>{{ u.role }}</td>
         <td>{{ u.status }}</td>
         <td>{{ u.email }}</td>
-        <td style="white-space:nowrap; display:flex; gap:0.25rem;">
-          <a href="{{ url_for('edit_user', username=u.username) }}" role="button" class="secondary">Edit</a>
-          <a href="{{ url_for('notify_user', username=u.username) }}" role="button">Notify</a>
+        <td class="actions-cell">
+          <details class="actions-menu">
+            <summary>Actions</summary>
+            <div class="actions-dropdown">
+              <a href="{{ url_for('edit_user', username=u.username) }}">Edit Details</a>
+              <a href="{{ url_for('notify_user', username=u.username) }}">Send Notification</a>
+              {% if u.status == 'active' %}
+              <form method="POST" action="{{ url_for('deactivate_user', username=u.username) }}" onsubmit="return confirm('Deactivate {{ u.username }}?');">
+                <button type="submit">Deactivate User</button>
+              </form>
+              {% else %}
+              <span class="muted">Status: inactive</span>
+              {% endif %}
+            </div>
+          </details>
         </td>
       </tr>
       {% endfor %}

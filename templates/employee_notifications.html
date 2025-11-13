@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero">
+  <h2>My Notifications</h2>
+  <p class="muted">View and manage your notifications.</p>
+</section>
+
+<article class="metric" style="margin-top: 2rem; padding: 2rem;">
+  {% if notifications %}
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+    <h3 style="margin: 0; color: #2563eb;">Your Notifications</h3>
+    <span class="badge-success" style="font-size: 0.9rem;">{{ unread_count }} unread</span>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 1rem;">
+    {% for notification in notifications %}
+    <div style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 1.5rem; background: {{ '#f0f9ff' if not notification.is_read else '#ffffff' }}; transition: all 0.2s ease;" class="notification-item" data-id="{{ notification.id }}">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+        <h4 style="margin: 0; color: #1f2937; font-size: 1.1rem;">{{ notification.subject }}</h4>
+        <small style="color: #6b7280; font-size: 0.9rem;">{{ notification.formatted_time }}</small>
+      </div>
+      <p style="margin: 0.5rem 0 1rem 0; color: #374151; line-height: 1.6; font-size: 1rem;">{{ notification.message }}</p>
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <small style="color: #6b7280;">From: {{ notification.sender_username }}</small>
+        {% if not notification.is_read %}
+        <button onclick="markAsRead({{ notification.id }})" style="background: #10b981; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.9rem; cursor: pointer; transition: all 0.2s ease;">
+          Mark as Read
+        </button>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div style="text-align: center; padding: 3rem;">
+    <h3 style="color: #6b7280; margin-bottom: 1rem;">No Notifications</h3>
+    <p class="muted">You don't have any notifications yet. They'll appear here when your admin sends you messages.</p>
+  </div>
+  {% endif %}
+</article>
+
+<script>
+function markAsRead(notificationId) {
+    fetch(`/employee/mark-notification-read/${notificationId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Find the notification element and update its appearance
+            const notificationElement = document.querySelector(`.notification-item[data-id="${notificationId}"]`);
+            if (notificationElement) {
+                notificationElement.style.background = '#ffffff';
+                // Remove the mark as read button
+                const button = notificationElement.querySelector('button');
+                if (button) {
+                    button.remove();
+                }
+                // Update unread count
+                const badge = document.querySelector('.badge-success');
+                if (badge) {
+                    const currentCount = parseInt(badge.textContent);
+                    if (currentCount > 1) {
+                        badge.textContent = (currentCount - 1) + ' unread';
+                    } else {
+                        badge.textContent = '0 unread';
+                    }
+                }
+            }
+        } else {
+            alert('Failed to mark notification as read.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while marking the notification as read.');
+    });
+}
+</script>
+{% endblock %}

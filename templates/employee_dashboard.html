@@ -1,53 +1,68 @@
 {% extends "base.html" %}
 {% block content %}
 <section class="hero">
-  <h2>My Account</h2>
-  <p class="muted">View your account details and access assignments.</p>
+  <h2>Welcome, {{ user.name }}!</h2>
+  <p class="muted">Your account is {{ "active" if user.status == "active" else "inactive" }}. Here's your current information.</p>
 </section>
-<article class="metric" style="margin-top:1rem; padding:1rem;">
-  <div class="grid">
-    <div>
-      <strong>Name</strong>
-      <p>{{ user.name }}</p>
-    </div>
-    <div>
-      <strong>Email</strong>
-      <p>{{ user.email }}</p>
-    </div>
-    <div>
-      <strong>Username</strong>
-      <p>{{ user.username }}</p>
-    </div>
-  </div>
-  <div class="grid">
-    <div>
-      <strong>Department</strong>
-      <p>{{ user.department }}</p>
-    </div>
-    <div>
-      <strong>Role</strong>
-      <p>{{ user.role }}</p>
-    </div>
-    <div>
-      <strong>Status</strong>
-      <p>{{ user.status }}</p>
-    </div>
-  </div>
-  <div class="grid">
-    <div>
-      <strong>OU</strong>
-      <p>{{ user.ou }}</p>
-    </div>
-    <div>
-      <strong>Groups</strong>
-      <p>{{ user.groups|join(', ') }}</p>
-    </div>
-    <div>
-      <strong>Permissions</strong>
-      <p>{{ user.permissions|join(', ') }}</p>
-    </div>
+
+<!-- Quick Actions -->
+<article class="metric" style="margin-top: 2rem; padding: 1.5rem;">
+  <h3 style="margin-bottom: 1rem; color: #2563eb;">Quick Actions</h3>
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+    <a href="{{ url_for('employee_notifications') }}" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; padding: 1rem; border-radius: 8px; text-decoration: none; text-align: center; transition: all 0.2s ease; display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
+      <span style="font-size: 1.5rem;">🔔</span>
+      <span style="font-weight: 600;">Notifications</span>
+      {% if unread_count > 0 %}
+      <span class="badge-error" style="font-size: 0.8rem; padding: 0.2rem 0.6rem;">{{ unread_count }} new</span>
+      {% endif %}
+    </a>
   </div>
 </article>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
+  <!-- Personal Information -->
+  <article class="metric" style="padding: 1.5rem;">
+    <h3 style="margin-bottom: 1rem; color: #2563eb;">Personal Information</h3>
+    <div style="display: flex; flex-direction: column; gap: 1rem;">
+      <div>
+        <strong style="color: #374151;">Full Name</strong>
+        <p style="margin: 0.25rem 0; font-size: 1.1rem;">{{ user.name }}</p>
+      </div>
+      <div>
+        <strong style="color: #374151;">Email Address</strong>
+        <p style="margin: 0.25rem 0; font-size: 1.1rem;">{{ user.email }}</p>
+      </div>
+    </div>
+  </article>
+
+  <!-- Professional Information -->
+  <article class="metric" style="padding: 1.5rem;">
+    <h3 style="margin-bottom: 1rem; color: #2563eb;">Professional Information</h3>
+    <div style="display: flex; flex-direction: column; gap: 1rem;">
+      <div>
+        <strong style="color: #374151;">Department</strong>
+        <p style="margin: 0.25rem 0; font-size: 1.1rem;">{{ user.department }}</p>
+      </div>
+      <div>
+        <strong style="color: #374151;">Role</strong>
+        <p style="margin: 0.25rem 0; font-size: 1.1rem;">{{ user.role }}</p>
+      </div>
+      <div>
+        <strong style="color: #374151;">Account Status</strong>
+        <p style="margin: 0.25rem 0;">
+          <span class="badge-{{ 'success' if user.status == 'active' else 'error' }}" style="font-size: 0.9rem; padding: 0.4rem 0.8rem;">
+            {{ user.status|title }}
+          </span>
+        </p>
+      </div>
+    </div>
+  </article>
+</div>
+
+<!-- Quick Actions -->
+<article class="metric" style="margin-top: 1.5rem; padding: 1.5rem; text-align: center;">
+  <h3 style="margin-bottom: 1rem; color: #2563eb;">Need Help?</h3>
+  <p class="muted" style="margin-bottom: 1rem;">If you need to update your information or have questions about your account, please contact your IT department.</p>
 {% endblock %}
 
 

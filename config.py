@@ -7,6 +7,7 @@ Configuration for AutoAccess.
 # RUBRIC: End-to-End Value (30%) — Clear, maintainable settings
 """
 
+import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).parent
@@ -44,8 +45,13 @@ OU_BY_DEPARTMENT = {
     "Intern": "OU=Interns,OU=Users,DC=company,DC=com",
 }
 
-# Email settings (simulated)
+# Email settings
 EMAIL_FROM = "it-automation@company.com"
+SMTP_SERVER = os.environ.get("SMTP_SERVER", "localhost")
+SMTP_PORT = int(os.environ.get("SMTP_PORT", 587))
+SMTP_USERNAME = os.environ.get("SMTP_USERNAME", "")
+SMTP_PASSWORD = os.environ.get("SMTP_PASSWORD", "")
+USE_REAL_EMAIL = os.environ.get("USE_REAL_EMAIL", "false").lower() == "true"
 EMAIL_SUBJECT_TEMPLATE = "Welcome to Company – Your Account Details"
 EMAIL_BODY_TEMPLATE = (
     "Hello {name},\n\n"
@@ -61,6 +67,7 @@ EMAIL_BODY_TEMPLATE = (
 # Summary notifications (simulated)
 HR_SUMMARY_EMAIL = "hr-ops@company.com"
 IT_SUMMARY_EMAIL = "it-automation@company.com"
+ADMIN_EMAIL = "admin@company.com"
 SUMMARY_SUBJECT_TEMPLATE = "AutoAccess Run Summary — {created} created, {deactivated} deactivated, {errors} errors"
 SUMMARY_BODY_TEMPLATE = (
     "AutoAccess Summary\n\n"

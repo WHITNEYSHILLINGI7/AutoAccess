@@ -1,8 +1,15 @@
-{% extends "base.html" %}
+n{% extends "base.html" %}
+<style>
+body {
+  background-image: url('/static/wallpaper.jpg');
+  background-size: cover;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
+</style>
 {% block content %}
 <div class="login-card">
   <h2>Employee Login</h2>
-  <p class="muted">Enter your company email to receive a one-time login code.</p>
   <form method="post">
     <label>
       Company Email

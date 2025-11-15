@@ -46,8 +46,8 @@ OU_BY_DEPARTMENT = {
 }
 
 # Email settings
-EMAIL_FROM = "it-automation@company.com"
-SMTP_SERVER = os.environ.get("SMTP_SERVER", "localhost")
+EMAIL_FROM = os.environ.get("EMAIL_FROM", "it-automation@company.com")
+SMTP_SERVER = os.environ.get("SMTP_SERVER", "smtp.gmail.com")
 SMTP_PORT = int(os.environ.get("SMTP_PORT", 587))
 SMTP_USERNAME = os.environ.get("SMTP_USERNAME", "")
 SMTP_PASSWORD = os.environ.get("SMTP_PASSWORD", "")
@@ -79,6 +79,11 @@ SUMMARY_BODY_TEMPLATE = (
 
 # Streamlit Dashboard
 DASHBOARD_TITLE = "AutoAccess – User Account Automation"
+
+# API Configuration
+API_ENABLED = os.environ.get("AUTOACCESS_API_ENABLED", "true").lower() == "true"
+API_RATE_LIMIT_REQUESTS = int(os.environ.get("API_RATE_LIMIT_REQUESTS", 100))
+API_RATE_LIMIT_WINDOW = int(os.environ.get("API_RATE_LIMIT_WINDOW", 60))  # seconds
 
 # Create directories if missing (idempotent)
 for _d in (UPLOADS_DIR, DATA_DIR, SLIDES_DIR):

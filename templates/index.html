@@ -1,42 +1,79 @@
 {% extends "base.html" %}
 {% block content %}
-<section class="hero">
-  <h2 style="margin:0 0 0.25rem 0;">Dashboard</h2>
-  <p class="muted" style="margin:0;">Monitor accounts, email notifications, and system health in real time.</p>
-</section>
+<style>
+body {
+  background-image: url('/static/wallpaper.jpg');
+  background-size: cover;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
+.container {
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 1rem !important;
+}
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.metrics-row {
+  display: flex;
+  gap: 1rem;
+  margin: 1rem 0;
+  overflow-x: auto;
+  animation: fadeInUp 1s ease-out;
+}
+.metric {
+  flex: 1;
+  min-width: 200px;
+  background: var(--card-bg);
+  border: 1px solid rgba(255,255,255,0.8);
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: var(--shadow-light);
+  transition: all 0.3s ease;
+  text-align: center;
+}
+.metric:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-medium);
+}
+.metric h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+.metric h1 {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--brand-1), var(--brand-5));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+</style>
 
-<div class="grid" style="margin-top:1rem;">
-  <article class="metric blue">
-    <hgroup>
-      <h3>Users Created</h3>
-      <p class="muted">Total accounts in directory</p>
-    </hgroup>
+<div class="metrics-row">
+  <div class="metric">
+    <h3><i class="fas fa-users"></i> Users</h3>
     <h1>{{ users_count }}</h1>
-  </article>
-  <article class="metric green">
-    <hgroup>
-      <h3>Emails Sent</h3>
-      <p class="muted">Welcome notifications</p>
-    </hgroup>
-    <h1>{{ emails_sent }}</h1>
-  </article>
-  <article class="metric">
-    <hgroup>
-      <h3>Last Processed</h3>
-      <p class="muted">From audit log</p>
-    </hgroup>
-    <h1 style="font-size:1.2rem">{{ last_processed }}</h1>
-  </article>
-  <article class="metric red">
-    <hgroup>
-      <h3>Deactivated</h3>
-      <p class="muted">Offboarded accounts</p>
-    </hgroup>
-    <h1>{{ deactivated }}</h1>
-  </article>
   </div>
-
-<article class="badge-success" style="display:inline-block; margin-top:0.5rem;">Success: {{ users_count }} accounts created</article>
+  <div class="metric">
+    <h3><i class="fas fa-envelope"></i> Emails</h3>
+    <h1>{{ emails_sent }}</h1>
+  </div>
+  <div class="metric">
+    <h3><i class="fas fa-user-times"></i> Deactivated</h3>
+    <h1>{{ deactivated }}</h1>
+  </div>
+</div>
 
 <h3 style="margin-top:1.5rem;">Created Users</h3>
 <div class="grid" style="align-items: end;">
@@ -44,8 +81,11 @@
   <label style="display:flex; align-items:center; gap:0.5rem;">
     <input type="checkbox" id="autoRefresh"> Auto-refresh every 5s
   </label>
+  <form action="{{ url_for('clear_users') }}" method="post" style="margin: 0;">
+    <button type="submit" style="background: var(--brand-4); border-color: var(--brand-4);" onclick="return confirm('Are you sure you want to clear all users? This action cannot be undone.')"><i class="fas fa-trash"></i> Clear All Users</button>
+  </form>
 </div>
-<div style="overflow:auto; background:#fff; border:1px solid rgba(0,0,0,0.06); border-radius:12px; padding:0.5rem;">
+<div style="overflow:visible; background:rgba(255,255,255,0.9); backdrop-filter: blur(10px); border:1px solid rgba(255,255,255,0.8); border-radius:16px; padding:0.5rem;">
   <table id="usersTable">
     <thead>
       <tr>
@@ -69,21 +109,8 @@
         <td>{{ u.role }}</td>
         <td>{{ u.status }}</td>
         <td>{{ u.email }}</td>
-        <td class="actions-cell">
-          <details class="actions-menu">
-            <summary>Actions</summary>
-            <div class="actions-dropdown">
-              <a href="{{ url_for('edit_user', username=u.username) }}">Edit Details</a>
-              <a href="{{ url_for('notify_user', username=u.username) }}">Send Notification</a>
-              {% if u.status == 'active' %}
-              <form method="POST" action="{{ url_for('deactivate_user', username=u.username) }}" onsubmit="return confirm('Deactivate {{ u.username }}?');">
-                <button type="submit">Deactivate User</button>
-              </form>
-              {% else %}
-              <span class="muted">Status: inactive</span>
-              {% endif %}
-            </div>
-          </details>
+        <td>
+          <a href="{{ url_for('edit_user', username=u.username) }}" role="button" style="background: var(--brand-1); border-color: var(--brand-1);"><i class="fas fa-edit"></i> Edit</a>
         </td>
       </tr>
       {% endfor %}

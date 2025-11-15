@@ -1,12 +1,17 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
 {% block content %}
 <style>
-.landing-hero {
+body {
   background-image: url('/static/landing.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   background-color: #2563eb; /* Fallback color */
+  background-attachment: fixed;
+}
+
+.landing-hero {
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -46,6 +51,7 @@
   margin-bottom: 2rem;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
   color: #ffffff;
+  font-family: 'Dancing Script', cursive;
 }
 </style>
 

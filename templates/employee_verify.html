@@ -1,8 +1,15 @@
 {% extends "base.html" %}
+<style>
+body {
+  background-image: url('/static/wallpaper.jpg');
+  background-size: cover;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
+</style>
 {% block content %}
 <div class="login-card">
   <h2>Enter Login Code</h2>
-  <p class="muted">We sent a one-time code to {{ email }}.</p>
   <form method="post">
     <label>
       6-digit Code

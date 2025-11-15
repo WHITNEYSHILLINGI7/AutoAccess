@@ -1,52 +1,146 @@
 {% extends "base.html" %}
+<style>
+body {
+  background-image: url('/static/wallpaper.jpg');
+  background-size: cover;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
+
+.edit-form {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.form-section {
+  margin-bottom: 2rem;
+}
+
+.form-section h4 {
+  margin-bottom: 1rem;
+  color: var(--brand-1);
+  font-weight: 600;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.access-preview {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-top: 2rem;
+}
+
+.access-preview h3 {
+  margin-bottom: 1rem;
+  color: var(--brand-1);
+}
+
+.access-preview ul {
+  list-style: none;
+  padding: 0;
+}
+
+.access-preview li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.access-preview li:last-child {
+  border-bottom: none;
+}
+
+.access-preview strong {
+  color: #374151;
+}
+</style>
 {% block content %}
 <section class="hero">
   <h2>Edit User – {{ user.username }}</h2>
   <p class="muted">Update profile fields. Changing department/role will reassign groups and permissions.</p>
-  </section>
-<article class="metric" style="margin-top:1rem; padding:1rem;">
+</section>
+
+<article class="edit-form">
   <form method="post">
-    <div class="grid">
-      <label>
-        Full name
-        <input type="text" name="name" value="{{ user.name }}" required>
-      </label>
-      <label>
-        Email
-        <input type="email" name="email" value="{{ user.email }}" required>
-      </label>
+    <div class="form-section">
+      <h4><i class="fas fa-user"></i> Personal Information</h4>
+      <div class="form-grid">
+        <label>
+          Full Name
+          <input type="text" name="name" value="{{ user.name }}" required>
+        </label>
+        <label>
+          Email Address
+          <input type="email" name="email" value="{{ user.email }}" required>
+        </label>
+      </div>
     </div>
-    <div class="grid">
-      <label>
-        Department
-        <select name="department" required>
-          {% for dept in ['Finance','HR','Marketing','IT','Intern'] %}
-            <option value="{{ dept }}" {% if user.department == dept %}selected{% endif %}>{{ dept }}</option>
-          {% endfor %}
-        </select>
-      </label>
-      <label>
-        Role
-        <input type="text" name="role" value="{{ user.role }}" required>
-      </label>
-      <label>
-        Status
-        <select name="status" required>
-          <option value="active" {% if user.status == 'active' %}selected{% endif %}>active</option>
-          <option value="inactive" {% if user.status == 'inactive' %}selected{% endif %}>inactive</option>
-        </select>
-      </label>
+
+    <div class="form-section">
+      <h4><i class="fas fa-building"></i> Professional Information</h4>
+      <div class="form-grid">
+        <label>
+          Department
+          <select name="department" required>
+            {% for dept in ['Finance','HR','Marketing','IT','Intern'] %}
+              <option value="{{ dept }}" {% if user.department == dept %}selected{% endif %}>{{ dept }}</option>
+            {% endfor %}
+          </select>
+        </label>
+        <label>
+          Role
+          <input type="text" name="role" value="{{ user.role }}" required>
+        </label>
+        <label>
+          Account Status
+          <select name="status" required>
+            <option value="active" {% if user.status == 'active' %}selected{% endif %}>Active</option>
+            <option value="inactive" {% if user.status == 'inactive' %}selected{% endif %}>Inactive</option>
+          </select>
+        </label>
+      </div>
     </div>
-    <button type="submit" style="background: var(--brand-2); border-color: var(--brand-2);">Save Changes</button>
-    <a href="{{ url_for('dashboard') }}" role="button" class="secondary">Cancel</a>
+
+    <div class="form-actions">
+      <button type="submit" style="background: var(--brand-1); border-color: var(--brand-1);"><i class="fas fa-save"></i> Save Changes</button>
+      <a href="{{ url_for('notify_user', username=user.username) }}" role="button" style="background: var(--brand-1); border-color: var(--brand-1);"><i class="fas fa-paper-plane"></i> Send Notification</a>
+      {% if user.status == 'active' %}
+      <form method="POST" action="{{ url_for('deactivate_user', username=user.username) }}" onsubmit="return confirm('Deactivate {{ user.username }}?');" style="display: inline;">
+        <button type="submit" style="background: var(--brand-1); border-color: var(--brand-1);"><i class="fas fa-user-times"></i> Deactivate User</button>
+      </form>
+      {% else %}
+      <span class="muted" style="display: flex; align-items: center; gap: 0.5rem;"><i class="fas fa-ban"></i> Account is inactive</span>
+      {% endif %}
+      <a href="{{ url_for('dashboard') }}" role="button" style="background: var(--brand-1); border-color: var(--brand-1);"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+    </div>
   </form>
 </article>
-<section style="margin-top:1rem;">
-  <h3>Access Preview</h3>
+
+<section class="access-preview">
+  <h3><i class="fas fa-shield-alt"></i> Access Preview</h3>
   <ul>
-    <li><strong>OU:</strong> {{ user.ou }}</li>
-    <li><strong>Groups:</strong> {{ user.groups|join(', ') }}</li>
-    <li><strong>Permissions:</strong> {{ user.permissions|join(', ') }}</li>
+    <li><strong>Active Directory OU:</strong> {{ user.ou }}</li>
+    <li><strong>Groups:</strong> {{ user.groups|join(', ') or 'None' }}</li>
+    <li><strong>Permissions:</strong> {{ user.permissions|join(', ') or 'None' }}</li>
   </ul>
 </section>
 {% endblock %}

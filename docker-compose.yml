@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  autoaccess:
+    build: .
+    ports:
+      - "5000:5000"   # Flask web app
+      - "8501:8501"   # Streamlit dashboard
+    volumes:
+      - ./data:/app/data
+      - ./uploads:/app/uploads
+      - ./slides:/app/slides
+      - ./logs:/app/logs
+    environment:
+      - FLASK_ENV=production
+      - AUTOACCESS_SECRET_KEY=${AUTOACCESS_SECRET_KEY:-autoaccess-production-secret-key-2024}
+      - AUTOACCESS_ADMIN_USER=${AUTOACCESS_ADMIN_USER:-admin}
+      - AUTOACCESS_ADMIN_PASS=${AUTOACCESS_ADMIN_PASS:-admin123!}
+      - USE_REAL_EMAIL=${USE_REAL_EMAIL:-false}
+      - SMTP_SERVER=${SMTP_SERVER:-smtp.gmail.com}
+      - SMTP_PORT=${SMTP_PORT:-587}
+      - SMTP_USERNAME=${SMTP_USERNAME}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - EMAIL_FROM=${EMAIL_FROM:-it-automation@company.com}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Optional: PostgreSQL database (uncomment to use instead of SQLite)
+  # db:
+  #   image: postgres:15
+  #   environment:
+  #     POSTGRES_DB: autoaccess
+  #     POSTGRES_USER: autoaccess
+  #     POSTGRES_PASSWORD: ${DB_PASSWORD}
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   ports:
+  #     - "5432:5432"
+
+volumes:
+  postgres_data:

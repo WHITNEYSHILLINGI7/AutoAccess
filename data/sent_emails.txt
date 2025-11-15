@@ -395,3 +395,161 @@ BODY:
 Your one-time code is: 880669
 This code expires when the browser session ends.
 ------------------------------------------------------------
+[2025-11-15T14:29:58.905530+00:00] FROM: it-automation@company.com TO: test@example.com
+SUBJECT: Test Subject
+BODY:
+Test Body
+------------------------------------------------------------
+[2025-11-15T14:38:21.011461+00:00] FROM: it-automation@company.com TO: test@example.com
+SUBJECT: Test Subject
+BODY:
+Test Body
+------------------------------------------------------------
+[2025-11-15T14:38:54.177141+00:00] FROM: it-automation@company.com TO: hr-ops@company.com
+SUBJECT: AutoAccess Run Summary — 0 created, 0 deactivated, 0 errors
+BODY:
+AutoAccess Summary
+
+Created: 0
+Deactivated: 0
+Errors: 0
+Processed at: 2025-11-15T14:38:54.177061
+
+------------------------------------------------------------
+[2025-11-15T14:38:54.180709+00:00] FROM: it-automation@company.com TO: it-automation@company.com
+SUBJECT: AutoAccess Run Summary — 0 created, 0 deactivated, 0 errors
+BODY:
+AutoAccess Summary
+
+Created: 0
+Deactivated: 0
+Errors: 0
+Processed at: 2025-11-15T14:38:54.177061
+
+------------------------------------------------------------
+[2025-11-15T14:40:32.872600+00:00] FROM: it-automation@company.com TO: hr-ops@company.com
+SUBJECT: AutoAccess Run Summary — 0 created, 0 deactivated, 0 errors
+BODY:
+AutoAccess Summary
+
+Created: 0
+Deactivated: 0
+Errors: 0
+Processed at: 2025-11-15T14:40:32.872456
+
+------------------------------------------------------------
+[2025-11-15T14:40:32.874017+00:00] FROM: it-automation@company.com TO: it-automation@company.com
+SUBJECT: AutoAccess Run Summary — 0 created, 0 deactivated, 0 errors
+BODY:
+AutoAccess Summary
+
+Created: 0
+Deactivated: 0
+Errors: 0
+Processed at: 2025-11-15T14:40:32.872456
+
+------------------------------------------------------------
+[2025-11-15T14:46:09.336440+00:00] FROM: it-automation@company.com TO: test@example.com
+SUBJECT: Test Subject
+BODY:
+Test Body
+------------------------------------------------------------
+[2025-11-15T14:47:01.007452+00:00] FROM: it-automation@company.com TO: hr-ops@company.com
+SUBJECT: AutoAccess Run Summary — 0 created, 0 deactivated, 0 errors
+BODY:
+AutoAccess Summary
+
+Created: 0
+Deactivated: 0
+Errors: 0
+Processed at: 2025-11-15T14:47:01.007426
+
+------------------------------------------------------------
+[2025-11-15T14:47:01.008513+00:00] FROM: it-automation@company.com TO: it-automation@company.com
+SUBJECT: AutoAccess Run Summary — 0 created, 0 deactivated, 0 errors
+BODY:
+AutoAccess Summary
+
+Created: 0
+Deactivated: 0
+Errors: 0
+Processed at: 2025-11-15T14:47:01.007426
+
+------------------------------------------------------------
+[2025-11-15T15:04:33.108868+00:00] FROM: it-automation@company.com TO: whitneyshillingi5@gmail.com
+SUBJECT: AutoAccess Real Email Test
+BODY:
+This is a real email test from the AutoAccess system.
+------------------------------------------------------------
+[2025-11-15T15:04:55.686745+00:00] FROM: it-automation@company.com TO: hr-ops@company.com
+SUBJECT: AutoAccess Run Summary — 0 created, 0 deactivated, 0 errors
+BODY:
+AutoAccess Summary
+
+Created: 0
+Deactivated: 0
+Errors: 0
+Processed at: 2025-11-15T15:04:55.686701
+
+------------------------------------------------------------
+[2025-11-15T15:05:00.246837+00:00] FROM: it-automation@company.com TO: it-automation@company.com
+SUBJECT: AutoAccess Run Summary — 0 created, 0 deactivated, 0 errors
+BODY:
+AutoAccess Summary
+
+Created: 0
+Deactivated: 0
+Errors: 0
+Processed at: 2025-11-15T15:04:55.686701
+
+------------------------------------------------------------
+[2025-11-15T15:05:10.090832+00:00] FROM: it-automation@company.com TO: hr-ops@company.com
+SUBJECT: AutoAccess Run Summary — 0 created, 0 deactivated, 0 errors
+BODY:
+AutoAccess Summary
+
+Created: 0
+Deactivated: 0
+Errors: 0
+Processed at: 2025-11-15T15:05:10.090783
+
+------------------------------------------------------------
+[2025-11-15T15:05:19.114688+00:00] FROM: it-automation@company.com TO: it-automation@company.com
+SUBJECT: AutoAccess Run Summary — 0 created, 0 deactivated, 0 errors
+BODY:
+AutoAccess Summary
+
+Created: 0
+Deactivated: 0
+Errors: 0
+Processed at: 2025-11-15T15:05:10.090783
+
+------------------------------------------------------------
+[2025-11-15T15:08:27.008414+00:00] FROM: it-automation@company.com TO: natabo.dorcus@company.com
+SUBJECT: Your AutoAccess Login Code
+BODY:
+Your one-time code is: 817708
+This code expires when the browser session ends.
+------------------------------------------------------------
+[2025-11-15T15:09:35.237032+00:00] FROM: it-automation@company.com TO: hr-ops@company.com
+SUBJECT: AutoAccess Run Summary — 0 created, 0 deactivated, 0 errors
+BODY:
+AutoAccess Summary
+
+Created: 0
+Deactivated: 0
+Errors: 0
+Processed at: 2025-11-15T15:09:35.237006
+
+------------------------------------------------------------
+[2025-11-15T15:09:35.238279+00:00] FROM: it-automation@company.com TO: it-automation@company.com
+SUBJECT: AutoAccess Run Summary — 0 created, 0 deactivated, 0 errors
+BODY:
+AutoAccess Summary
+
+Created: 0
+Deactivated: 0
+Errors: 0
+Processed at: 2025-11-15T15:09:35.237006
+
+------------------------------------------------------------

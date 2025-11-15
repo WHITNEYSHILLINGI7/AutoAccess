@@ -1,4 +1,12 @@
-{% extends "base.html" %}
+app.py{% extends "base.html" %}
+<style>
+body {
+  background-image: url('/static/wallpaper.jpg');
+  background-size: cover;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
+</style>
 {% block content %}
 <div class="login-card">
   <h2>Admin Login</h2>
@@ -11,10 +19,9 @@
       Password
       <input type="password" name="password" required>
     </label>
-    <button type="submit" style="background: var(--brand-1); border-color: var(--brand-1); width: 100%;">Login</button>
+    <button type="submit" style="background: var(--brand-1); border-color: var(--brand-1); width: 100%;"><i class="fas fa-sign-in-alt"></i> Login</button>
   </form>
-  <p class="muted" style="margin:0.5rem 0 0;">Default: admin / admin123! (override via env vars)</p>
 </div>
 {% endblock %}
-
+n 
 

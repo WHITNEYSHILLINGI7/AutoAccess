@@ -8,12 +8,18 @@ from flask import Flask, render_template, request, redirect, url_for, flash, sen
 import pandas as pd
 import os
 
-from config import UPLOADS_DIR, USERS_JSON, DB_PATH, EMAIL_LOG, SAMPLE_XLSX
-from database import init_db, fetch_recent_users, log_event, create_notification, fetch_user_notifications, mark_notification_read, get_unread_notification_count
+from config import UPLOADS_DIR, USERS_JSON, DB_PATH, EMAIL_LOG, SAMPLE_XLSX, API_ENABLED, API_RATE_LIMIT_REQUESTS, API_RATE_LIMIT_WINDOW, ROLE_ACCESS_MATRIX, OU_BY_DEPARTMENT
+from database import init_db, fetch_recent_users, log_event, create_notification, fetch_user_notifications, mark_notification_read, get_unread_notification_count, fetch_errors
 from autoaccess import ensure_initial_files, process_file
-from simulate_ad import SimulatedAD
+from simulate_ad import SimulatedAD, ADUser
 from email_simulator import send_email_simulated
+from api_auth import api_key_required, rate_limit
 import secrets
+from datetime import datetime
+from dateutil.parser import parse as parse_date
+from autoaccess import username_from_email
+from flask import jsonify
+from dataclasses import asdict
 
 
 def create_app() -> Flask:
@@ -183,6 +189,18 @@ def create_app() -> Flask:
             flash(f"User {username} has been deactivated successfully.", "success")
         except Exception as e:
             flash(f"Deactivation failed: {e}", "error")
+        return redirect(url_for("dashboard"))
+
+    @app.route("/clear_users", methods=["POST"])
+    @login_required
+    def clear_users():
+        try:
+            ad = SimulatedAD()
+            ad.clear_all_users()
+            log_event("clear_all_users", None, "all users cleared by admin")
+            flash("All users have been cleared successfully.", "success")
+        except Exception as e:
+            flash(f"Failed to clear users: {e}", "error")
         return redirect(url_for("dashboard"))
 
     @app.route("/notifications", methods=["GET", "POST"])
@@ -360,6 +378,556 @@ def create_app() -> Flask:
         session.clear()
         flash("Logged out.", "success")
         return redirect(url_for("landing"))
+
+    # API Routes - only if API is enabled
+    if API_ENABLED:
+        @app.route("/api/users", methods=["GET"])
+        @api_key_required
+        @rate_limit(max_requests=API_RATE_LIMIT_REQUESTS, window_seconds=API_RATE_LIMIT_WINDOW)
+        def api_get_users():
+            """Get all users with optional filtering."""
+            ad = SimulatedAD()
+            users = ad.list_users()
+
+            # Apply filters
+            status_filter = request.args.get("status")
+            department_filter = request.args.get("department")
+
+            if status_filter:
+                users = [u for u in users if u.get("status") == status_filter]
+            if department_filter:
+                users = [u for u in users if u.get("department") == department_filter]
+
+            return jsonify({
+                "success": True,
+                "count": len(users),
+                "users": users
+            })
+
+        @app.route("/api/users/<username>", methods=["GET"])
+        @api_key_required
+        @rate_limit(max_requests=API_RATE_LIMIT_REQUESTS, window_seconds=API_RATE_LIMIT_WINDOW)
+        def api_get_user(username: str):
+            """Get a specific user."""
+            ad = SimulatedAD()
+            user = ad.get_user(username)
+            if not user:
+                return jsonify({
+                    "success": False,
+                    "error": "User not found"
+                }), 404
+
+            return jsonify({
+                "success": True,
+                "user": user
+            })
+
+        @app.route("/api/users", methods=["POST"])
+        @api_key_required
+        @rate_limit(max_requests=API_RATE_LIMIT_REQUESTS, window_seconds=API_RATE_LIMIT_WINDOW)
+        def api_create_user():
+            """Create a new user."""
+            data = request.get_json()
+            if not data:
+                return jsonify({
+                    "success": False,
+                    "error": "JSON payload required"
+                }), 400
+
+            required_fields = ["name", "email", "department", "role"]
+            for field in required_fields:
+                if field not in data:
+                    return jsonify({
+                        "success": False,
+                        "error": f"Missing required field: {field}"
+                    }), 400
+
+            try:
+                ad = SimulatedAD()
+                username = username_from_email(data["email"])
+
+                # Check if user exists
+                if ad.get_user(username):
+                    return jsonify({
+                        "success": False,
+                        "error": "User already exists"
+                    }), 409
+
+                user = ADUser(
+                    username=username,
+                    name=data["name"],
+                    email=data["email"],
+                    department=data["department"],
+                    role=data["role"],
+                    ou=OU_BY_DEPARTMENT.get(data["department"], "OU=Users,DC=company,DC=com"),
+                    groups=ROLE_ACCESS_MATRIX.get(data["department"], {}).get("groups", []),
+                    permissions=ROLE_ACCESS_MATRIX.get(data["department"], {}).get("permissions", []),
+                    status=data.get("status", "active"),
+                    created_at=datetime.utcnow().isoformat(),
+                )
+
+                ad.create_user(user)
+                log_event("api_create_user", username, f"via API")
+
+                return jsonify({
+                    "success": True,
+                    "message": "User created successfully",
+                    "user": asdict(user)
+                }), 201
+
+            except Exception as e:
+                return jsonify({
+                    "success": False,
+                    "error": str(e)
+                }), 500
+
+        @app.route("/api/users/<username>", methods=["PUT"])
+        @api_key_required
+        @rate_limit(max_requests=API_RATE_LIMIT_REQUESTS, window_seconds=API_RATE_LIMIT_WINDOW)
+        def api_update_user(username: str):
+            """Update an existing user."""
+            data = request.get_json()
+            if not data:
+                return jsonify({
+                    "success": False,
+                    "error": "JSON payload required"
+                }), 400
+
+            try:
+                ad = SimulatedAD()
+                if not ad.get_user(username):
+                    return jsonify({
+                        "success": False,
+                        "error": "User not found"
+                    }), 404
+
+                ad.update_user(username, data)
+                log_event("api_update_user", username, f"via API: {list(data.keys())}")
+
+                return jsonify({
+                    "success": True,
+                    "message": "User updated successfully"
+                })
+
+            except Exception as e:
+                return jsonify({
+                    "success": False,
+                    "error": str(e)
+                }), 500
+
+        @app.route("/api/users/<username>", methods=["DELETE"])
+        @api_key_required
+        @rate_limit(max_requests=API_RATE_LIMIT_REQUESTS, window_seconds=API_RATE_LIMIT_WINDOW)
+        def api_delete_user(username: str):
+            """Delete a user."""
+            try:
+                ad = SimulatedAD()
+                if not ad.get_user(username):
+                    return jsonify({
+                        "success": False,
+                        "error": "User not found"
+                    }), 404
+
+                ad.delete_user(username)
+                log_event("api_delete_user", username, "via API")
+
+                return jsonify({
+                    "success": True,
+                    "message": "User deleted successfully"
+                })
+
+            except Exception as e:
+                return jsonify({
+                    "success": False,
+                    "error": str(e)
+                }), 500
+
+        @app.route("/api/users/bulk-update", methods=["POST"])
+        @api_key_required
+        @rate_limit(max_requests=API_RATE_LIMIT_REQUESTS, window_seconds=API_RATE_LIMIT_WINDOW)
+        def api_bulk_update_users():
+            """Bulk update multiple users."""
+            data = request.get_json()
+            if not data or "updates" not in data:
+                return jsonify({
+                    "success": False,
+                    "error": "JSON payload with 'updates' array required"
+                }), 400
+
+            updates = data["updates"]
+            if not isinstance(updates, list):
+                return jsonify({
+                    "success": False,
+                    "error": "'updates' must be an array"
+                }), 400
+
+            results = []
+            success_count = 0
+            error_count = 0
+
+            ad = SimulatedAD()
+            for update_item in updates:
+                username = update_item.get("username")
+                update_data = update_item.get("data", {})
+
+                if not username:
+                    results.append({"error": "Missing username"})
+                    error_count += 1
+                    continue
+
+                try:
+                    if not ad.get_user(username):
+                        results.append({"username": username, "error": "User not found"})
+                        error_count += 1
+                        continue
+
+                    ad.update_user(username, update_data)
+                    log_event("api_bulk_update", username, f"via API: {list(update_data.keys())}")
+                    results.append({"username": username, "status": "updated"})
+                    success_count += 1
+
+                except Exception as e:
+                    results.append({"username": username, "error": str(e)})
+                    error_count += 1
+
+            return jsonify({
+                "success": True,
+                "summary": {
+                    "total": len(updates),
+                    "successful": success_count,
+                    "failed": error_count
+                },
+                "results": results
+            })
+
+        @app.route("/api/users/bulk-deactivate", methods=["POST"])
+        @api_key_required
+        @rate_limit(max_requests=API_RATE_LIMIT_REQUESTS, window_seconds=API_RATE_LIMIT_WINDOW)
+        def api_bulk_deactivate_users():
+            """Bulk deactivate multiple users."""
+            data = request.get_json()
+            if not data or "usernames" not in data:
+                return jsonify({
+                    "success": False,
+                    "error": "JSON payload with 'usernames' array required"
+                }), 400
+
+            usernames = data["usernames"]
+            if not isinstance(usernames, list):
+                return jsonify({
+                    "success": False,
+                    "error": "'usernames' must be an array"
+                }), 400
+
+            results = []
+            success_count = 0
+            error_count = 0
+
+            ad = SimulatedAD()
+            for username in usernames:
+                try:
+                    if not ad.get_user(username):
+                        results.append({"username": username, "error": "User not found"})
+                        error_count += 1
+                        continue
+
+                    ad.deactivate_user(username)
+                    log_event("api_bulk_deactivate", username, "via API")
+                    results.append({"username": username, "status": "deactivated"})
+                    success_count += 1
+
+                except Exception as e:
+                    results.append({"username": username, "error": str(e)})
+                    error_count += 1
+
+            return jsonify({
+                "success": True,
+                "summary": {
+                    "total": len(usernames),
+                    "successful": success_count,
+                    "failed": error_count
+                },
+                "results": results
+            })
+
+        @app.route("/api/audit", methods=["GET"])
+        @api_key_required
+        @rate_limit(max_requests=API_RATE_LIMIT_REQUESTS, window_seconds=API_RATE_LIMIT_WINDOW)
+        def api_get_audit_log():
+            """Get audit log entries with optional filtering."""
+            limit = int(request.args.get("limit", 100))
+            action_filter = request.args.get("action")
+            username_filter = request.args.get("username")
+
+            rows = fetch_recent_users(limit=limit)
+            audit_entries = []
+
+            for row in rows:
+                entry = {
+                    "event_time": row[0],
+                    "action": row[1],
+                    "username": row[2],
+                    "details": row[3]
+                }
+
+                # Apply filters
+                if action_filter and entry["action"] != action_filter:
+                    continue
+                if username_filter and entry["username"] != username_filter:
+                    continue
+
+                audit_entries.append(entry)
+
+            return jsonify({
+                "success": True,
+                "count": len(audit_entries),
+                "audit_log": audit_entries
+            })
+
+        @app.route("/api/reports/users", methods=["GET"])
+        @api_key_required
+        @rate_limit(max_requests=API_RATE_LIMIT_REQUESTS, window_seconds=API_RATE_LIMIT_WINDOW)
+        def api_reports_users():
+            """Get user reports with filtering and aggregation."""
+            status_filter = request.args.get("status")
+            department_filter = request.args.get("department")
+            date_from = request.args.get("from")
+            date_to = request.args.get("to")
+
+            ad = SimulatedAD()
+            users = ad.list_users()
+
+            # Apply filters
+            if status_filter:
+                users = [u for u in users if u.get("status") == status_filter]
+            if department_filter:
+                users = [u for u in users if u.get("department") == department_filter]
+
+            # Date filtering (if created_at is available)
+            if date_from or date_to:
+                filtered_users = []
+                for user in users:
+                    created_at = user.get("created_at", "")
+                    if created_at:
+                        try:
+                            user_date = parse_date(created_at).date()
+                            if date_from:
+                                from_date = parse_date(date_from).date()
+                                if user_date < from_date:
+                                    continue
+                            if date_to:
+                                to_date = parse_date(date_to).date()
+                                if user_date > to_date:
+                                    continue
+                        except:
+                            pass  # Skip date filtering if parsing fails
+                    filtered_users.append(user)
+                users = filtered_users
+
+            # Generate summary statistics
+            total_users = len(users)
+            active_users = len([u for u in users if u.get("status") == "active"])
+            inactive_users = len([u for u in users if u.get("status") == "inactive"])
+
+            department_counts = {}
+            for user in users:
+                dept = user.get("department", "Unknown")
+                department_counts[dept] = department_counts.get(dept, 0) + 1
+
+            return jsonify({
+                "success": True,
+                "summary": {
+                    "total_users": total_users,
+                    "active_users": active_users,
+                    "inactive_users": inactive_users,
+                    "departments": department_counts
+                },
+                "users": users
+            })
+
+        @app.route("/api/reports/export", methods=["GET"])
+        @api_key_required
+        @rate_limit(max_requests=API_RATE_LIMIT_REQUESTS, window_seconds=API_RATE_LIMIT_WINDOW)
+        def api_reports_export():
+            """Export user data as CSV or Excel."""
+            format_type = request.args.get("format", "csv").lower()
+            status_filter = request.args.get("status")
+            department_filter = request.args.get("department")
+
+            if format_type not in ["csv", "excel"]:
+                return jsonify({
+                    "success": False,
+                    "error": "Format must be 'csv' or 'excel'"
+                }), 400
+
+            ad = SimulatedAD()
+            users = ad.list_users()
+
+            # Apply filters
+            if status_filter:
+                users = [u for u in users if u.get("status") == status_filter]
+            if department_filter:
+                users = [u for u in users if u.get("department") == department_filter]
+
+            # Convert to DataFrame
+            df = pd.DataFrame(users)
+
+            if format_type == "csv":
+                csv_data = df.to_csv(index=False)
+                response = app.response_class(
+                    csv_data,
+                    mimetype='text/csv',
+                    headers={"Content-Disposition": "attachment;filename=users_export.csv"}
+                )
+                return response
+            else:  # excel
+                from io import BytesIO
+                output = BytesIO()
+                with pd.ExcelWriter(output, engine='openpyxl') as writer:
+                    df.to_excel(writer, sheet_name='Users', index=False)
+                output.seek(0)
+
+                response = app.response_class(
+                    output.getvalue(),
+                    mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                    headers={"Content-Disposition": "attachment;filename=users_export.xlsx"}
+                )
+                return response
+
+        @app.route("/api/users/export", methods=["GET"])
+        @api_key_required
+        @rate_limit(max_requests=API_RATE_LIMIT_REQUESTS, window_seconds=API_RATE_LIMIT_WINDOW)
+        def api_users_export():
+            """Export full user database."""
+            format_type = request.args.get("format", "json").lower()
+
+            ad = SimulatedAD()
+            users = ad.list_users()
+
+            if format_type == "json":
+                return jsonify({
+                    "success": True,
+                    "export_timestamp": datetime.utcnow().isoformat(),
+                    "total_users": len(users),
+                    "users": users
+                })
+            elif format_type == "csv":
+                df = pd.DataFrame(users)
+                csv_data = df.to_csv(index=False)
+                response = app.response_class(
+                    csv_data,
+                    mimetype='text/csv',
+                    headers={"Content-Disposition": "attachment;filename=users_full_export.csv"}
+                )
+                return response
+            else:
+                return jsonify({
+                    "success": False,
+                    "error": "Format must be 'json' or 'csv'"
+                }), 400
+
+        @app.route("/api/users/import", methods=["POST"])
+        @api_key_required
+        @rate_limit(max_requests=API_RATE_LIMIT_REQUESTS, window_seconds=API_RATE_LIMIT_WINDOW)
+        def api_users_import():
+            """Import users from JSON payload with conflict resolution."""
+            data = request.get_json()
+            if not data or "users" not in data:
+                return jsonify({
+                    "success": False,
+                    "error": "JSON payload with 'users' array required"
+                }), 400
+
+            users_to_import = data["users"]
+            conflict_resolution = data.get("conflict_resolution", "skip")  # skip, update, error
+
+            if not isinstance(users_to_import, list):
+                return jsonify({
+                    "success": False,
+                    "error": "'users' must be an array"
+                }), 400
+
+            if conflict_resolution not in ["skip", "update", "error"]:
+                return jsonify({
+                    "success": False,
+                    "error": "conflict_resolution must be 'skip', 'update', or 'error'"
+                }), 400
+
+            results = []
+            success_count = 0
+            error_count = 0
+            skipped_count = 0
+
+            ad = SimulatedAD()
+            for user_data in users_to_import:
+                username = user_data.get("username") or username_from_email(user_data.get("email", ""))
+
+                if not username:
+                    results.append({"error": "Missing username or email"})
+                    error_count += 1
+                    continue
+
+                # Check for existing user
+                existing_user = ad.get_user(username)
+                if existing_user:
+                    if conflict_resolution == "skip":
+                        results.append({"username": username, "status": "skipped", "reason": "User exists"})
+                        skipped_count += 1
+                        continue
+                    elif conflict_resolution == "error":
+                        results.append({"username": username, "error": "User already exists"})
+                        error_count += 1
+                        continue
+                    # conflict_resolution == "update" - continue with update
+
+                try:
+                    if existing_user:
+                        # Update existing user
+                        ad.update_user(username, user_data)
+                        log_event("api_import_update", username, "via API import")
+                        results.append({"username": username, "status": "updated"})
+                    else:
+                        # Create new user - ensure required fields
+                        required_fields = ["name", "email", "department", "role"]
+                        missing_fields = [f for f in required_fields if f not in user_data]
+                        if missing_fields:
+                            results.append({"username": username, "error": f"Missing fields: {missing_fields}"})
+                            error_count += 1
+                            continue
+
+                        # Create ADUser object
+                        user = ADUser(
+                            username=username,
+                            name=user_data["name"],
+                            email=user_data["email"],
+                            department=user_data["department"],
+                            role=user_data["role"],
+                            ou=OU_BY_DEPARTMENT.get(user_data["department"], "OU=Users,DC=company,DC=com"),
+                            groups=ROLE_ACCESS_MATRIX.get(user_data["department"], {}).get("groups", []),
+                            permissions=ROLE_ACCESS_MATRIX.get(user_data["department"], {}).get("permissions", []),
+                            status=user_data.get("status", "active"),
+                            created_at=user_data.get("created_at", datetime.utcnow().isoformat()),
+                        )
+                        ad.create_user(user)
+                        log_event("api_import_create", username, "via API import")
+                        results.append({"username": username, "status": "created"})
+
+                    success_count += 1
+
+                except Exception as e:
+                    results.append({"username": username, "error": str(e)})
+                    error_count += 1
+
+            return jsonify({
+                "success": True,
+                "summary": {
+                    "total": len(users_to_import),
+                    "successful": success_count,
+                    "skipped": skipped_count,
+                    "failed": error_count
+                },
+                "results": results
+            })
 
     return app
 

@@ -134,4 +134,9 @@ class SimulatedAD:
             raise ValueError(f"User '{username}' not found")
         self._write(data)
 
+    def clear_all_users(self) -> None:
+        """Clear all users from the store."""
+        data = {"users": []}
+        self._write(data)
+
 

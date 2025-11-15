@@ -79,8 +79,5 @@ st.dataframe(audit_df, use_container_width=True, hide_index=True)
 st.subheader("Error Log")
 st.dataframe(errors_df, use_container_width=True, hide_index=True)
 
-st.divider()
-st.caption("Tip: Drop or edit 'uploads/new_hires.xlsx' to trigger processing. Refresh to see updates.")
-
 
 

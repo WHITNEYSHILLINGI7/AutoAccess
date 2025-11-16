@@ -259,9 +259,42 @@ def create_app() -> Flask:
             otp = str(secrets.randbelow(900000) + 100000)
             session["emp_email"] = email
             session["emp_otp"] = otp
-            send_email_simulated(email, "Your AutoAccess Login Code", f"Your one-time code is: {otp}\nThis code expires when the browser session ends.")
-            flash("A login code has been sent to your email.", "success")
-            return redirect(url_for("employee_verify"))
+            
+            # Attempt to send OTP email
+            email_sent = send_email_simulated(
+                email, 
+                "Your AutoAccess Login Code", 
+                f"Your one-time code is: {otp}\n\nThis code expires when the browser session ends.\n\nIf you did not request this code, please ignore this email."
+            )
+            
+            if email_sent:
+                flash("A login code has been sent to your email.", "success")
+                return redirect(url_for("employee_verify"))
+            else:
+                # Email sending failed
+                from database import log_error
+                import os
+                log_error("otp_email_failed", f"Failed to send OTP email to {email}. OTP was generated but not sent.", None)
+                
+                # In development/simulation mode, show helpful message
+                # In production, this would just say "email not configured"
+                use_real_email = os.environ.get("USE_REAL_EMAIL", "false").lower() == "true"
+                if not use_real_email:
+                    flash(
+                        f"⚠ Email simulation mode: OTP was generated but not sent. "
+                        f"To enable real emails, set USE_REAL_EMAIL=true. "
+                        f"Check server logs for OTP: {otp}",
+                        "error"
+                    )
+                else:
+                    flash(
+                        "⚠ Failed to send email. Please contact support or check your email configuration. "
+                        "The OTP has been logged on the server.",
+                        "error"
+                    )
+                # Still redirect to verify page - OTP is in session
+                # Admin can check logs if needed, or configure email properly
+                return redirect(url_for("employee_verify"))
         return render_template("employee_login.html")
 
     @app.route("/employee/verify", methods=["GET", "POST"])

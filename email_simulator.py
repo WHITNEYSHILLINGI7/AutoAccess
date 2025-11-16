@@ -36,16 +36,17 @@ def send_email_simulated(to_address: str, subject: str, body: str) -> bool:
 
     if USE_REAL_EMAIL and INFOBIP_API_KEY:
         try:
-            # Use Infobip REST API v3
-            # Try JSON format first (standard), fallback to form-data if needed
+            # Use Infobip Email API v3
+            # This endpoint requires multipart/form-data format
             url = f"{INFOBIP_BASE_URL}/email/3/send"
             headers = {
                 "Authorization": f"App {INFOBIP_API_KEY}",
                 "Accept": "application/json"
             }
 
-            # Infobip Email API v3 expects messages array format
-            payload = {
+            # Infobip Email API v3 requires multipart/form-data
+            # Format: messages array as JSON string in form data
+            messages_json = json.dumps({
                 "messages": [
                     {
                         "from": EMAIL_FROM,
@@ -54,14 +55,18 @@ def send_email_simulated(to_address: str, subject: str, body: str) -> bool:
                         "text": body
                     }
                 ]
+            })
+
+            # Use multipart/form-data
+            files = {
+                "messages": (None, messages_json, "application/json")
             }
-            headers["Content-Type"] = "application/json"
 
             print(f"Attempting to send email via Infobip to {to_address}...")
             print(f"URL: {url}")
             print(f"From: {EMAIL_FROM}")
             
-            response = requests.post(url, headers=headers, json=payload, timeout=30)
+            response = requests.post(url, headers=headers, files=files, timeout=30)
             
             print(f"Infobip Response Status: {response.status_code}")
             print(f"Infobip Response: {response.text}")

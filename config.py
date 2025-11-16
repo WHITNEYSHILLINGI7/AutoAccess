@@ -52,6 +52,8 @@ SMTP_PORT = int(os.environ.get("SMTP_PORT", 587))
 SMTP_USERNAME = os.environ.get("SMTP_USERNAME", "")
 SMTP_PASSWORD = os.environ.get("SMTP_PASSWORD", "")
 USE_REAL_EMAIL = os.environ.get("USE_REAL_EMAIL", "false").lower() == "true"
+INFOBIP_API_KEY = os.environ.get("INFOBIP_API_KEY", "")
+INFOBIP_BASE_URL = os.environ.get("INFOBIP_BASE_URL", "https://wg698q.api.infobip.com")
 EMAIL_SUBJECT_TEMPLATE = "Welcome to Company – Your Account Details"
 EMAIL_BODY_TEMPLATE = (
     "Hello {name},\n\n"

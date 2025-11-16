@@ -975,8 +975,11 @@ def _read_users_df() -> pd.DataFrame:
         return pd.DataFrame(columns=["username", "name", "email", "department", "role", "status", "created_at"])
 
 
+# Create app instance for Gunicorn
+app = create_app()
+
 if __name__ == "__main__":
-    app = create_app()
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=False)
 
 

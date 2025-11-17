@@ -168,3 +168,4 @@ After attempting to send an OTP, check:
 
 ⚠️ **Important:** In production, ensure OTP codes are NOT shown in error messages. The current implementation shows them in simulation mode only, but consider removing this entirely for production deployments.
 
+

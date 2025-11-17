@@ -78,12 +78,28 @@ def create_app() -> Flask:
         emails_sent = sum(1 for r in audit_rows if r[1] == "email_sent")
         deactivated = sum(1 for r in audit_rows if r[1] == "deactivate_user")
         last_processed = max((r[0] for r in audit_rows), default="—")
+
+        # Format created_at timestamps to remove microseconds
+        users_records = users_df.to_dict(orient="records")
+        for user in users_records:
+            if user.get("created_at"):
+                try:
+                    # Parse ISO timestamp and format without microseconds
+                    dt = datetime.fromisoformat(user["created_at"].replace('Z', '+00:00'))
+                    user["created_at"] = dt.strftime('%Y-%m-%d %H:%M:%S')
+                except (ValueError, AttributeError):
+                    # Keep original if parsing fails
+                    pass
+
+        # Calculate deactivated count from current user status
+        deactivated_count = sum(1 for user in users_records if user.get("status") == "inactive")
+
         return render_template(
             "index.html",
-            users=users_df.to_dict(orient="records"),
+            users=users_records,
             users_count=users_count,
             emails_sent=emails_sent,
-            deactivated=deactivated,
+            deactivated=deactivated_count,
             last_processed=last_processed,
         )
 
@@ -346,11 +362,11 @@ def create_app() -> Flask:
         notifications_data = fetch_user_notifications(email)
         notifications = []
         for row in notifications_data:
-            # Parse and format the timestamp
-            from datetime import datetime
+            # Parse and format the timestamp to current timezone
             try:
-                # Parse ISO format timestamp
+                # Parse ISO format timestamp and convert to local time
                 dt = datetime.fromisoformat(row[1].replace('Z', '+00:00'))
+                # Format as readable date/time without microseconds
                 formatted_time = dt.strftime('%b %d, %Y %I:%M %p')
             except:
                 formatted_time = row[1]  # Fallback to raw timestamp

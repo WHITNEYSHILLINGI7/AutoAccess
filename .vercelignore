@@ -1,0 +1,12 @@
+# Exclude all files except those needed for the API
+*
+# Include only necessary files
+!api/
+!config.py
+!database.py
+!simulate_ad.py
+!email_simulator.py
+!autoaccess.py
+!requirements.txt
+!vercel.json
+!.vercelignore

@@ -11,10 +11,5 @@
       "src": "/(.*)",
       "dest": "api/index.py"
     }
-  ],
-  "env": {
-    "AUTOACCESS_SECRET_KEY": "@autoaccess-secret-key",
-    "AUTOACCESS_ADMIN_USER": "@autoaccess-admin-user",
-    "AUTOACCESS_ADMIN_PASS": "@autoaccess-admin-pass"
-  }
+  ]
 }

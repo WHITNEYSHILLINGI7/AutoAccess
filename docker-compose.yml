@@ -1,10 +1,38 @@
 version: '3.8'
 
 services:
-  autoaccess:
+  web:
     build: .
     ports:
       - "5000:5000"   # Flask web app
+    volumes:
+      - ./data:/app/data
+      - ./uploads:/app/uploads
+      - ./slides:/app/slides
+      - ./logs:/app/logs
+    environment:
+      - FLASK_ENV=production
+      - AUTOACCESS_SECRET_KEY=${AUTOACCESS_SECRET_KEY:-autoaccess-production-secret-key-2024}
+      - AUTOACCESS_ADMIN_USER=${AUTOACCESS_ADMIN_USER:-admin}
+      - AUTOACCESS_ADMIN_PASS=${AUTOACCESS_ADMIN_PASS:-admin123!}
+      - USE_REAL_EMAIL=${USE_REAL_EMAIL:-false}
+      - SMTP_SERVER=${SMTP_SERVER:-smtp.gmail.com}
+      - SMTP_PORT=${SMTP_PORT:-587}
+      - SMTP_USERNAME=${SMTP_USERNAME}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - EMAIL_FROM=${EMAIL_FROM:-it-automation@company.com}
+    command: python -c "from app import create_app; app = create_app(); app.run(host='0.0.0.0', port=5000)"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  dashboard:
+    build: .
+    ports:
       - "8501:8501"   # Streamlit dashboard
     volumes:
       - ./data:/app/data
@@ -22,9 +50,12 @@ services:
       - SMTP_USERNAME=${SMTP_USERNAME}
       - SMTP_PASSWORD=${SMTP_PASSWORD}
       - EMAIL_FROM=${EMAIL_FROM:-it-automation@company.com}
+    command: streamlit run dashboard.py --server.port 8501 --server.headless true --server.address 0.0.0.0
     restart: unless-stopped
+    depends_on:
+      - web
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/"]
+      test: ["CMD", "curl", "-f", "http://localhost:8501/"]
       interval: 30s
       timeout: 10s
       retries: 3
